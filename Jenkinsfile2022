@@ -62,8 +62,9 @@ sshagent(['cf44f084-c75a-4caf-9b37-b52e8021d310']) {
 }//try closing
  catch(e){
  currentBuild.result = "FAILED"
-}
+ }
  finally{
- sendSlackNotification(currentBuild.result)
+ 
+sendSlackNotification(currentBuild.result)
 }
 }//Node closind
