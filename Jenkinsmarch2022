@@ -1,0 +1,32 @@
+
+
+
+node{
+    
+echo "Job Name is: ${env.JOB_NAME}"
+echo "Node Name is: ${env.NODE_NAME}"    
+
+def mavenHome = tool name: 'maven3.8.4'
+
+stage('CheckoutCode'){
+git branch: 'development', credentialsId: 'd8af9516-3ca1-4367-9edb-21a66e57be27', url: 'https://github.com/Ravtez/maven-web-application.git'
+}
+stage('Build'){
+sh "${mavenHome}/bin/mvn clean package"
+}
+
+stage('ExecuteSonarQubeReport'){
+sh "${mavenHome}/bin/mvn sonar:sonar"
+}
+
+stage('UploadArtifactsintoNexus'){
+sh "${mavenHome}/bin/mvn deploy"
+}
+stage('DeployApplicationIntoTomcatServer'){
+sshagent(['cf44f084-c75a-4caf-9b37-b52e8021d310']) {
+    sh " scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@52.66.201.232://opt/apache-tomcat-9.0.62/webapps/"
+
+}
+}
+
+}
