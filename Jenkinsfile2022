@@ -35,6 +35,7 @@ properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKe
 
 def mavenHome = tool name: 'maven3.8.4'
 
+try{
 stage('CheckoutCode'){
 git branch: 'development', credentialsId: 'd8af9516-3ca1-4367-9edb-21a66e57be27', url: 'https://github.com/Ravtez/maven-web-application.git'
 }
@@ -58,4 +59,11 @@ sshagent(['cf44f084-c75a-4caf-9b37-b52e8021d310']) {
 }
 }
 */
-}
+}//try closing
+   catch(e){
+   currentBuild.result = "FAILED"
+   }
+   finally{
+   sendSlackNotification(currentBuild.result)
+   }
+}//Node closind
