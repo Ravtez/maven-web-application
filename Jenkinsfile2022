@@ -44,7 +44,7 @@ git branch: 'development', credentialsId: 'd8af9516-3ca1-4367-9edb-21a66e57be27'
 stage('Build'){
 sh "${mavenHome}/bin/mvn clean package"
 }
-
+/*
 //Execute the SonarQube Report
 stage('ExecuteSonarQubeReport'){
 sh "${mavenHome}/bin/mvn sonar:sonar"
@@ -62,7 +62,7 @@ sshagent(['cf44f084-c75a-4caf-9b37-b52e8021d310']) {
 }
 
 }
-
+*/
 }//try closing
   catch(e){
   currentBuild.result = "FAILED"
