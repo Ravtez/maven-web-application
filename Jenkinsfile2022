@@ -1,7 +1,7 @@
 
-def sendSlackNotification(String buildStatus = 'STARTED') {
-  // build status of null means successful
-  buildStatus =  buildStatus ?: 'SUCCESSFUL'
+def sendSlackNotifications(String buildStatus = 'STARTED') {
+ 
+  buildStatus =  buildStatus ?: 'SUCCESS'
 
   // Default values
   def colorName = 'RED'
@@ -13,7 +13,7 @@ def sendSlackNotification(String buildStatus = 'STARTED') {
   if (buildStatus == 'STARTED') {
     color = 'YELLOW'
     colorCode = '#FFFF00'
-  } else if (buildStatus == 'SUCCESSFUL') {
+  } else if (buildStatus == 'SUCCESS') {
     color = 'GREEN'
     colorCode = '#00FF00'
   } else {
@@ -26,7 +26,7 @@ def sendSlackNotification(String buildStatus = 'STARTED') {
 }
 
 
-node{
+node('slaves'){
 
 echo "Job Name is: ${env.JOB_NAME}"
 echo "Node Name is: ${env.NODE_NAME}"
@@ -65,6 +65,6 @@ sshagent(['cf44f084-c75a-4caf-9b37-b52e8021d310']) {
   }
   finally{
 
-sendSlackNotification(currentBuil.result)
+sendSlackNotifications(currentBuild.result)
 }
 }//Node closind
