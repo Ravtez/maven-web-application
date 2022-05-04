@@ -1,4 +1,3 @@
-
 def sendSlackNotifications(String buildStatus = 'STARTED') {
  
   buildStatus =  buildStatus ?: 'SUCCESS'
@@ -25,38 +24,44 @@ def sendSlackNotifications(String buildStatus = 'STARTED') {
   slackSend (color: colorCode, message: summary)
 }
 
-
 node('slaves'){
 
 echo "Job Name is: ${env.JOB_NAME}"
 echo "Node Name is: ${env.NODE_NAME}"
+
+properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5')), [$class: 'JobLocalConfiguration', changeReasonComment: ''], pipelineTriggers([pollSCM('* * * * *')])])
+
 def mavenHome = tool name: 'maven3.8.4'
 
 try{
 
 sendSlackNotifications('STARTED')
 
+//Get the code from GithUb Repo
 stage('CheckoutCode'){
 git branch: 'development', credentialsId: 'd8af9516-3ca1-4367-9edb-21a66e57be27', url: 'https://github.com/Ravtez/maven-web-application.git'
 }
+//Do the build by using Maven Build tool
 stage('Build'){
 sh "${mavenHome}/bin/mvn clean package"
 }
-
 /*
+//Execute the SonarQube Report
 stage('ExecuteSonarQubeReport'){
 sh "${mavenHome}/bin/mvn sonar:sonar"
 }
 
+//Upload Artifacts into Artifactory Repo
 stage('UploadArtifactsintoNexus'){
 sh "${mavenHome}/bin/mvn deploy"
 }
 
+//Deploy Application into Tomcat Server
 stage('DeployApplicationIntoTomcatServer'){
 sshagent(['cf44f084-c75a-4caf-9b37-b52e8021d310']) {
     sh " scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@52.66.201.232://opt/apache-tomcat-9.0.62/webapps/"
-
 }
+
 }
 */
 }//try closing
